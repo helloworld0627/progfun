@@ -167,5 +167,20 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+
+    val occurrences: Occurrences = sentenceOccurrences(sentence)    //occ = List[(char, Int)]
+
+    def inner(occ: Occurrences): List[Sentence] = {
+      if (occ.isEmpty) List(List())
+      else {
+        val filterd = combinations(occ).filter { p => dictionaryByOccurrences.contains(p) }
+        for (x <- filterd;
+             y <- dictionaryByOccurrences.apply(x);
+             z <- inner(subtract(occ, x)))
+          yield y :: z
+      }
+    }
+    inner(occurrences)
+  }
 }
