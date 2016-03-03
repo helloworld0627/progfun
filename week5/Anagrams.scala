@@ -36,7 +36,11 @@ object Anagrams {
    *  Note: you must use `groupBy` to implement this method!
    */
   def wordOccurrences(w: Word): Occurrences =
-    w.groupBy(c => c).map { case (k,v) => (k, v.size) }.toList
+    w.toLowerCase
+      .groupBy(c => c)
+      .map { case (k,v) => (k, v.size) }
+      .toList
+      .sortWith((o1, o2) => o1._1 < o2._1 )
 
   /** Converts a sentence into its character occurrence list. */
   def sentenceOccurrences(s: Sentence): Occurrences =
@@ -113,7 +117,15 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    val subSet = y.toMap
+    val allSet = x.toMap
+    val res = subSet.foldLeft(allSet)((aMap, kv) => {
+      val cnt = aMap.apply(kv._1) - kv._2
+      if (cnt != 0) aMap.updated(kv._1, cnt) else aMap - kv._1
+    })
+    res.toList
+  }
 
   /** Returns a list of all anagram sentences of the given sentence.
    *
